@@ -1,0 +1,345 @@
+---
+title: "Final_R_reference"
+author: "Hoa Ninh"
+date: 17 Dec 2022
+output:
+  html_document:
+    theme: cosmo
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Intro
+
+This is a set of R examples for my personal reference beyond this course.
+
+# R reference guide {.tabset .tabset-pills}
+
+## Loading Data and Packages 
+
+To install `here` I can just type:
+
+```{r eval=FALSE}
+install.packages("here")
+```
+
+to load package 
+
+```{r}
+require (here)
+```
+
+to read data
+
+```{r eval=FALSE}
+here()
+read.csv()
+```
+
+**Example**
+
+This is how to load the `here` and `palmerpenguins` packages. 
+
+```{r eval=FALSE}
+install.packages("palmerpenguins")
+```
+
+```{r}
+library(palmerpenguins)
+```
+
+
+**Example**
+
+Ginkgo data: use the 2021 ginkgo data to create a `data.frame` called ginkgo using `here()` and `read.csv()`
+
+```{r}
+ginkgo = read.csv(here("data", "ginkgo_data_2021.csv"))
+```
+
+
+## Data Structures 
+
+`c()` is to create a vector 
+
+
+```{r}
+# Numeric vector of random numbers
+a = c(8, 3, 5, 6)
+
+# Numeric vector of continuous numbers
+b = c(1:4)
+
+# Vector of string variables
+color = c("red", "green", "blue", "yellow")
+
+```
+
+`length()` is to count the number of characters of the vector
+
+```{r}
+# count the number of characters of the vector a (I know it is 4)
+length (b)
+
+# count the number of characters of the vector color (I know it is 4)
+length (color)
+```
+
+`matrix()` is to create a matrix with number of columns and rows
+
+```{r}
+# Create a matrix containing 6 elements, with 3 columns and 3 rows
+matrix(c(1:8), ncol = 3, nrow = 3 )
+
+# Create a matrix containing 6 elements, with 3 columns and 3 rows, arranging by rows
+matrix(c(1:8), ncol = 3, nrow = 3, byrow = TRUE)
+```
+
+It requests 9 elements to fill in the (3 rows - 3 columns) matrix, so after 8, element 1 is added automatically to fill in the missing element.
+
+`data.frame()`is to contain a range of vectors. In order to establish a data frame, all columns have to have the same number of observations.
+
+```{r}
+data.frame(color, a, b)
+```
+
+**Example**
+Use the ginkgo data.frame to get information of:
+
+*   nrow()
+*   ncol()
+*   dim()
+
+```{r}
+# Count number of rows
+nrow(ginkgo) 
+
+# Count number of columns
+ncol(ginkgo)
+
+# Count number of rows and columns
+dim(ginkgo)
+```
+
+
+## Subsetting 
+
+Sometime we just need one column from the available data, so we use subletting
+
+**Example with ginkgo data**
+
+```{r eval=FALSE}
+# $ Subset a data frame by name: select one of the columns in the ginkgo data
+## Select max-width column
+ginkgo$max_width
+
+# [] Use subset by position to:
+## select first row of the ginkgo data
+ginkgo[1 , ]
+
+## select the element in row 2, column 3
+ginkgo[2, 3]
+
+## select the 3rd column of the ginkgo data
+ginkgo[, 3]
+
+# subset() Use this function to retrieve all the data for Adelie penguins (in the species column) from the peuguins dataset.
+
+Adelie = subset(penguins, species == "Adelie")
+```
+
+## Numerical Data Exploration
+
+`summary`is used to give an overview about the data set, for example how many observations are included, the min, max, median and mean value.
+
+**Example with ginkgo data**
+
+```{r}
+# Overview of ginkgo data
+summary(ginkgo)
+
+# Average of max_width
+mean(ginkgo$max_width)
+
+# Standardized Deviation of max_width
+sd(ginkgo$max_width)
+```
+
+
+**Example with Palmer penguin data**
+
+`na.rm` is to omit NA value
+
+```{r}
+# Overview of Palmer penguin data
+summary(penguins)
+
+# Average of bill_length_mm
+mean(penguins$bill_length_mm, na.rm = TRUE)
+
+# Standardized Deviation of bill_length_mm
+sd(penguins$bill_length_mm, na.rm = TRUE)
+
+```
+
+
+## Graphical Data Exploration
+
+Plotting data is for data exploration.
+
+
+**Scatterplot**
+
+```{r}
+# Using the ginkgo data, create a scatterplot of max leaf depth (x) and max leaf width (y)
+
+plot(x = ginkgo$max_depth,
+     y= ginkgo$max_width,
+     col = "blue",
+     pch = 21,
+     cex = 1, 
+     main = "Scatterplot of\n maximun leaf depth and maximun leaf width",
+     xlab = "Maximun leaf depth (mm)",
+     ylab = "Maximun leaf width (mm)",
+     xlim = c(0,160),
+     ylim = c(0,160))
+
+# col = color of the point 
+# pch = plotting ‘character’, i.e., symbol to use
+# cex = character (or symbol) expansion: a numerical vector
+# main = title of the plot
+# xlab = title of x axis
+# ylab = title of y axis
+# xlim ylim = numeric vectors of length 2, giving the x and y coordinates ranges
+```
+
+
+**Histogram**
+
+```{r}
+# Create a histogram of penguin flipper lengths
+
+hist(penguins$flipper_length_mm,
+     breaks = 8,
+     main = "Flipper lengths histogram",
+     xlab = "Flipper lengths (mm)",
+     col = "pink")
+
+# breaks = make references to the number of break points in the histogram
+```
+
+
+**Boxplot**
+
+Simple boxplot
+
+```{r}
+# A simple boxplot of ginkgo petiole lengths
+boxplot(ginkgo$petiole_length,
+        main = "Simple boxplot of petiole length",
+        ylab= "petiole lengths",
+        col= "lightblue")
+```
+
+Conditional boxplot
+
+`~` is used to add the condition between two variables
+
+```{r}
+# Conditional boxplot of one of the continuous variables conditioned on the seeds_present column
+
+boxplot(petiole_length ~ seeds_present, data= ginkgo,
+        main = "Conditional boxplot\n
+        petiole length by seeds present",
+        ylab = "Petiole length",
+        xlab = "Seed present",
+        col= "yellow")
+```
+
+
+** 4-panel figure of histograms**
+
+`par` to make the grid so that I can illustrate a number of plots together.
+
+```{r}
+# Create a 4-panel figure of histograms, arranged in a 2 by 2 grid.
+
+## Create the 2 by 2 grid 
+par(mfrow= c(2,2))
+
+## First histogram
+hist(penguins$flipper_length_mm,
+     breaks = 8,
+     main = "Flipper lengths",
+     xlab = "Flipper lengths (mm)",
+     col = "pink")
+
+## Second histogram
+hist(penguins$body_mass_g,
+     breaks = 8,
+     main = "Body Mass",
+     xlab = "Body Mass (g)",
+     col = "lightblue")
+
+## Third histogram
+hist(penguins$bill_length_mm,
+     breaks = 8,
+     main = "Bill length",
+     xlab = "Bill length (mm)",
+     col = "orange")
+
+## Forth histogram
+hist(penguins$bill_depth_mm,
+     breaks = 8,
+     main = "Bill depth",
+     xlab = "Bill depth (mm)",
+     col = "green")
+
+```
+
+
+## Distribution Functions
+
+**Normal Distribution**
+
+`dnorm()`gives the density
+`pnorm()`gives the distribution function
+`qnorm()`gives the quantile function
+
+```{r}
+# Estimate the probability density with vector of quantiles = 8, vector of means = 4, vector of standard deviations = 2
+dnorm(8, mean= 4, sd= 2)
+
+# Estimate the cumulative distribution with vector of quantiles = 8, vector of means = 4, vector of standard deviations = 2
+pnorm(8, mean= 4, sd= 2)
+
+# estimate the quantile distribution with vector of probabilities = 0.25,  vector of means = 4, vector of standard deviations = 2
+qnorm(0.25, mean = 4, sd= 2)
+```
+
+
+
+**Binomial Distribution**
+
+`dbinom()`gives the density
+`pbinom()`gives the distribution function,
+`qbinom()`gives the quantile function
+
+```{r}
+# Estimate the probability density with vector of quantiles = 3, number of trials = 10, probability of success on each trial = 0.5
+dbinom(3, size = 10, prob = 0.5)
+
+# Estimate the cumulative distribution with vector of quantiles = 3, number of trials = 10, probability of success on each trial = 0.5
+pbinom(5, size = 10, prob = 0.5)
+
+# estimate the quantile distribution with vector of probabilities = 0.25,  number of trials = 10, probability of success on each trial = 0.5
+qbinom(0.25, size = 10, prob = 0.5)
+
+```
+
+
+
